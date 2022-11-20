@@ -1,6 +1,5 @@
 import { User } from '../../models';
 import { authClient } from '../auth0';
-import { parseAuthError } from '../auth0/helpers/parseAuthError';
 
 export async function signUp(user: User): Promise<User> {
   try {
@@ -16,6 +15,6 @@ export async function signUp(user: User): Promise<User> {
       email: response.email
     };
   } catch (err) {
-    throw new Error(`filed to create a user: ${parseAuthError(err)}`);
+    throw new Error(`filed to create a user: ${err.toString()}`);
   }
 }

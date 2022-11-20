@@ -5,11 +5,16 @@ import { UserService } from '../../services';
 import { ServerResponse, TypedRequestBody, TypedResponse } from '../../types';
 import { getAuthorizationToken } from '../../utils';
 
+/**
+ * Returns information about the user by access_token
+ */
 async function getProfile(
   request: TypedRequestBody<unknown>,
   response: TypedResponse<ServerResponse<User>>
 ) {
-  const data = await UserService.getProfile(getAuthorizationToken(request));
+  const data = await UserService.getProfile({
+    accessToken: getAuthorizationToken(request)
+  });
 
   response.json({
     success: true,

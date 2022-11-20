@@ -6,7 +6,9 @@ export async function signIn(user: User): Promise<{ accessToken: string }> {
     const response = await authClient.passwordGrant({
       username: user.email,
       password: user.password,
-      audience: process.env.JWT_AUDIENCE
+      audience: process.env.JWT_AUDIENCE,
+      scope:
+        'read:current_user update:current_user_identities update:current_user_metadata'
     });
 
     return {

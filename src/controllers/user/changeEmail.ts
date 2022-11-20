@@ -4,15 +4,19 @@ import { executionHandler } from '../../middlewares';
 import { User } from '../../models';
 import { UserService } from '../../services';
 import { ServerResponse, TypedRequestBody, TypedResponse } from '../../types';
+import { getAuthorizationToken } from '../../utils';
 
 /**
- * Sing in the user
+ * Sends verification email to reset password
  */
-async function signIn(
+async function changeEmail(
   request: TypedRequestBody<User>,
-  response: TypedResponse<ServerResponse<{ accessToken: string }>>
+  response: TypedResponse<ServerResponse<boolean>>
 ) {
-  const data = await UserService.signIn(request.body);
+  const data = await UserService.changeEmail({
+    accessToken: getAuthorizationToken(request),
+    user: request.body
+  });
 
   response.json({
     success: true,
@@ -20,20 +24,16 @@ async function signIn(
   });
 }
 
-const signInValidation: Partial<Record<keyof User, ParamSchema>> = {
+const changeEmailValidation: Partial<Record<keyof User, ParamSchema>> = {
   email: {
     errorMessage: 'Please provide email',
     trim: true,
     isEmail: true
-  },
-  password: {
-    errorMessage: 'Please provide password',
-    trim: true
   }
 };
 
-export const signInRoute = Router().post(
-  '/signin',
-  checkSchema(signInValidation),
-  executionHandler(signIn)
+export const changeEmailRoute = Router().post(
+  '/changeemail',
+  checkSchema(changeEmailValidation),
+  executionHandler(changeEmail)
 );

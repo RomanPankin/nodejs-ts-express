@@ -5,6 +5,9 @@ import { User } from '../../models';
 import { UserService } from '../../services';
 import { ServerResponse, TypedRequestBody, TypedResponse } from '../../types';
 
+/**
+ * Sign up the user
+ */
 async function signUp(
   request: TypedRequestBody<User>,
   response: TypedResponse<ServerResponse<User>>
