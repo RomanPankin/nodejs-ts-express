@@ -1,18 +1,35 @@
+import { NextFunction } from 'express';
+import { validationResult } from 'express-validator';
 import { ServerResponse, TypedRequestBody, TypedResponse } from '../types';
+import { errorHandler } from './errorHandler';
 
 export function executionHandler<T, D>(
-  callback: (request: TypedRequestBody<T>) => Promise<ServerResponse<D>>
-): (req: TypedRequestBody<T>, res: TypedResponse<ServerResponse>) => void {
+  handler: (request: TypedRequestBody<T>) => Promise<ServerResponse<D>>
+): (
+  req: TypedRequestBody<T>,
+  res: TypedResponse<ServerResponse>,
+  next: NextFunction
+) => void {
   return async (
     req: TypedRequestBody<T>,
-    res: TypedResponse<ServerResponse>
+    res: TypedResponse<ServerResponse>,
+    next: NextFunction
   ) => {
     try {
-      const responseBody = await callback(req);
+      // validation
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          errors: errors.array().map((x) => x.msg as string),
+          success: false
+        });
+      }
+
+      // controller
+      const responseBody = await handler(req);
       res.json(responseBody);
     } catch (err) {
-      res.status(500);
-      res.json({ error: err?.message, success: false });
+      errorHandler(err, req, res, next);
     }
   };
 }

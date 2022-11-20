@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { ServerResponse } from './serverResponse';
 
 export type TypedResponse<T> = Omit<Response, 'json' | 'status'> & {
   json(data: T): TypedResponse<T>;
@@ -7,3 +8,9 @@ export type TypedResponse<T> = Omit<Response, 'json' | 'status'> & {
 export interface TypedRequestBody<T> extends Request {
   body: T;
 }
+
+export type CustomerRoute<T, D> = {
+  method: string;
+  path: string;
+  handler: (data: T) => Promise<ServerResponse<D>>;
+};

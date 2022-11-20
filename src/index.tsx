@@ -3,10 +3,11 @@ import path from 'path';
 import fs from 'fs';
 import bodyParser from 'body-parser';
 import expressWinston from 'express-winston';
-
 import * as dotenv from 'dotenv';
+
 import { logger } from './utils';
-import { configureRoutes } from './routes';
+import { errorHandler, page404Handler } from './middlewares';
+import { routes } from './controllers';
 
 // environment variables
 const envFile = path.join(__dirname, '..', '.env');
@@ -18,14 +19,16 @@ dotenv.config({ path: envFile });
 
 // express configuration
 const app = express();
-const port = process.env.SERVER_PORT;
+const port = process.env.SERVER_PORT || 3000;
 
 // middlewares and routes
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(expressWinston.logger(logger));
-
-configureRoutes(app);
+app.use(express.json());
+app.use('/', routes.export());
+app.use(errorHandler);
+app.use(page404Handler);
 
 app.listen(port, () => {
   // eslint-disable-next-line no-console
