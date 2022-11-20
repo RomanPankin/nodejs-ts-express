@@ -4,7 +4,10 @@ import { ServerResponse, TypedRequestBody, TypedResponse } from '../types';
 import { errorHandler } from './errorHandler';
 
 export function executionHandler<T, D>(
-  handler: (request: TypedRequestBody<T>) => Promise<ServerResponse<D>>
+  handler: (
+    request: TypedRequestBody<T>,
+    response: TypedResponse<ServerResponse>
+  ) => Promise<void>
 ): (
   req: TypedRequestBody<T>,
   res: TypedResponse<ServerResponse>,
@@ -26,8 +29,7 @@ export function executionHandler<T, D>(
       }
 
       // controller
-      const responseBody = await handler(req);
-      res.json(responseBody);
+      await handler(req, res);
     } catch (err) {
       errorHandler(err, req, res, next);
     }

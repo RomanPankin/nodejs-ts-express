@@ -1,21 +1,11 @@
+import './utils/env';
 import express from 'express';
-import path from 'path';
-import fs from 'fs';
 import bodyParser from 'body-parser';
 import expressWinston from 'express-winston';
-import * as dotenv from 'dotenv';
 
 import { logger } from './utils';
 import { errorHandler, page404Handler } from './middlewares';
 import { routes } from './controllers';
-
-// environment variables
-const envFile = path.join(__dirname, '..', '.env');
-if (!fs.existsSync(envFile)) {
-  throw new Error('Please define .env file');
-}
-
-dotenv.config({ path: envFile });
 
 // express configuration
 const app = express();

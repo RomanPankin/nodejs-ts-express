@@ -5,19 +5,19 @@ import { User } from '../../models';
 import { UserService } from '../../services';
 import { ServerResponse, TypedRequestBody, TypedResponse } from '../../types';
 
-async function signUp(
+async function signIn(
   request: TypedRequestBody<User>,
-  response: TypedResponse<ServerResponse<User>>
+  response: TypedResponse<ServerResponse<{ accessToken: string }>>
 ) {
-  const user = await UserService.signUp(request.body);
+  const data = await UserService.signIn(request.body);
 
   response.json({
     success: true,
-    data: user
+    data
   });
 }
 
-const signUpValidation: Partial<Record<keyof User, ParamSchema>> = {
+const signInValidation: Partial<Record<keyof User, ParamSchema>> = {
   email: {
     errorMessage: 'Please provide email',
     trim: true,
@@ -29,8 +29,8 @@ const signUpValidation: Partial<Record<keyof User, ParamSchema>> = {
   }
 };
 
-export const signUpRoute = Router().post(
-  '/signup',
-  checkSchema(signUpValidation),
-  executionHandler(signUp)
+export const signInRoute = Router().post(
+  '/signin',
+  checkSchema(signInValidation),
+  executionHandler(signIn)
 );
